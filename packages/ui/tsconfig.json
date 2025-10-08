@@ -1,0 +1,10 @@
+{
+  "//": "File: packages/ui/tsconfig.json | Purpose: TypeScript settings for UI package | Structure: Extends shared base, sets jsx",
+  "extends": "../types/tsconfig.base.json",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "rootDir": "src",
+    "outDir": "dist"
+  },
+  "include": ["src"]
+}

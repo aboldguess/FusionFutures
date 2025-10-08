@@ -1,0 +1,8 @@
+# ============================================================================
+# File: pnpm-lock.yaml
+# Purpose: Placeholder lockfile capturing dependency graph snapshot for Docker builds.
+# Structure: Minimal stub; regenerate with `pnpm install` for production use.
+# Usage: Ensures Docker COPY commands succeed even before dependency resolution.
+# ============================================================================
+lockfileVersion: '9.0'
+importers: {}
