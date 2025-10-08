@@ -1,0 +1,19 @@
+{
+  "//": "File: apps/web/tsconfig.json | Purpose: TypeScript config for Next.js app | Structure: Extends workspace base with Next specifics",
+  "extends": "../../packages/types/tsconfig.base.json",
+  "compilerOptions": {
+    "types": ["node", "jest", "vitest", "next"],
+    "paths": {
+      "@fusion-futures/ui": ["../../packages/ui/src"],
+      "@fusion-futures/types": ["../../packages/types/src"]
+    }
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "**/*.cjs",
+    "**/*.mjs"
+  ],
+  "exclude": ["node_modules"]
+}

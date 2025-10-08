@@ -1,4 +1,105 @@
-# FusionFutures
+# Fusion Futures Monorepo
 
-An online digital platform for the National Fusion Skills Hub, capable of hosting material for employers, jobseekers, learners, and educators
+> **File Overview:**
+> - **Purpose:** Acts as the primary onboarding and operations guide for the Fusion Futures monorepo.
+> - **Structure:** Sections cover architecture, setup (Linux/Windows/Raspberry Pi), development workflows, debugging, security, and deployment.
+> - **Usage:** Read sequentially when first cloning; jump to task-specific sections during day-to-day work.
 
+## Architectural Overview
+
+Fusion Futures is a security-first, developer-friendly monorepo comprised of:
+
+- `apps/web`: Next.js 14 App Router interface with Auth.js, Tailwind, accessibility-first UI, and rich debugging hints.
+- `services/api`: FastAPI + SQLModel backend using modular routers, event bus, role-based auth, and comprehensive observability.
+- `packages/ui`: Shared React component library including the module registry consumed by the web app.
+- `packages/types`: Generated TypeScript definitions sourced from the API's OpenAPI schema.
+- `infra/docker`: Production-ready Docker and Caddy reverse proxy setup with Postgres and backup routines.
+- Tooling: Makefile orchestrations, CI, linting, formatting, and automated tests.
+
+## Quick Start (Linux, macOS, WSL, Raspberry Pi OS)
+
+```bash
+# 1. Clone and enter the repository
+ git clone https://example.com/FusionFutures.git
+ cd FusionFutures
+
+# 2. Prepare Node and Python environments (recommended via asdf)
+ asdf install nodejs latest
+ asdf install python latest
+
+# 3. Bootstrap dependencies
+ npm install -g pnpm@latest
+ pnpm install
+ python -m venv .venv && source .venv/bin/activate
+ pip install --upgrade pip
+ pip install -e services/api
+
+# 4. Generate shared API types
+ make types
+
+# 5. Launch the full stack with hot reload
+ make dev
+```
+
+## Quick Start (Windows PowerShell)
+
+```powershell
+# 1. Clone and enter
+ git clone https://example.com/FusionFutures.git
+ Set-Location FusionFutures
+
+# 2. Install Node + Python (e.g., winget)
+ winget install OpenJS.NodeJS.LTS
+ winget install Python.Python.3.12
+
+# 3. Prepare environments
+ npm install -g pnpm@latest
+ pnpm install
+ python -m venv .venv
+ .\.venv\Scripts\Activate.ps1
+ python -m pip install --upgrade pip
+ pip install -e services/api
+
+# 4. Generate API-driven types
+ make types
+
+# 5. Start the stack (Docker Desktop required)
+ make dev
+```
+
+> **Raspberry Pi Note:** Replace Node.js/Python installers above with `sudo apt install nodejs npm python3 python3-venv` or use `asdf` from source.
+
+## Debugging Essentials
+
+- **Structured Logging:** Both frontend and backend emit JSON-formatted logs annotated with correlation IDs.
+- **On-Screen Guidance:** The web UI exposes a collapsible “Debug Console” banner showing API health, log hints, and safe-mode toggles.
+- **CLI Visibility:** `make logs` tails Docker and application logs with color-coded severity markers.
+- **Tracing Requests:** Outbound requests attach an `X-Request-ID` header allowing cross-service correlation.
+
+## Security Practices
+
+- Strict dependency pinning to reputable, actively maintained libraries.
+- Auth.js backed by secure cookies, CSRF tokens, and role-aware session guards.
+- FastAPI implements rate limiting, audit trails, and structured error responses (RFC 7807 problem+json).
+- Secrets are externalized via environment templates (`.env.example`).
+
+## Testing & Quality Gates
+
+- `pnpm lint` for ESLint + Prettier.
+- `pnpm test` for unit tests (React Testing Library + Vitest).
+- `pytest` for backend unit and integration tests.
+- `make e2e` (subset of `make dev`) runs smoke tests hitting `/api/healthz` and CRUD endpoints.
+- CI enforces linting, typing, and test suites via GitHub Actions.
+
+## Deployment Snapshot
+
+- `infra/docker/docker-compose.yml` orchestrates Caddy, Next.js, FastAPI, Postgres, pgAdmin, and scheduled backups.
+- `scripts/deploy.sh` builds and pushes Docker images with environment-aware tagging before running infrastructure migrations.
+
+## Support & Contributions
+
+1. Review coding conventions embedded in per-file headers and AGENTS (when present).
+2. Run `make help` to list task automations.
+3. Submit PRs using the provided `make pr-ready` (future automation) ensuring tests pass.
+
+Happy building — and keep security, clarity, and empathy front-of-mind.

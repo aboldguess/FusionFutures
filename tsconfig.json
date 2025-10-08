@@ -1,0 +1,7 @@
+{
+  "//": "File: tsconfig.json | Purpose: Shared TypeScript configuration base | Structure: Compiler options extended by packages",
+  "extends": "./packages/types/tsconfig.base.json",
+  "compilerOptions": {
+    "baseUrl": "."
+  }
+}
