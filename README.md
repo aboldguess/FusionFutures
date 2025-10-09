@@ -14,7 +14,7 @@ Fusion Futures is a security-first, developer-friendly monorepo comprised of:
 - `packages/ui`: Shared React component library including the module registry consumed by the web app.
 - `packages/types`: Generated TypeScript definitions sourced from the API's OpenAPI schema.
 - `infra/docker`: Production-ready Docker and Caddy reverse proxy setup with Postgres and backup routines.
-- Tooling: Makefile orchestrations, CI, linting, formatting, and automated tests.
+- Tooling: Python-based setup automation, CI pipelines, linting, formatting, and automated tests.
 
 ## Quick Start (Linux, macOS, WSL, Raspberry Pi OS)
 
@@ -28,18 +28,11 @@ Fusion Futures is a security-first, developer-friendly monorepo comprised of:
  asdf install nodejs latest
  asdf install python 3.12.3
 
-# 3. Bootstrap dependencies
+# 3. Bootstrap tooling once (installs pnpm globally)
  npm install -g pnpm@latest
- pnpm install
- python -m venv .venv && source .venv/bin/activate
- pip install --upgrade pip
- pip install -e services/api
 
-# 4. Generate shared API types
- make types
-
-# 5. Launch the full stack with hot reload
- make dev
+# 4. Run the guided setup (installs dependencies, generates types, launches Docker)
+ python scripts/fusionfutures_setup.py
 ```
 
 ## Quick Start (Windows PowerShell)
@@ -54,28 +47,31 @@ Fusion Futures is a security-first, developer-friendly monorepo comprised of:
  winget install OpenJS.NodeJS.LTS
  winget install Python.Python.3.12
 
-# 3. Prepare environments
+# 3. Install pnpm globally (once per machine)
  npm install -g pnpm@latest
- pnpm install
- python -m venv .venv
- .\.venv\Scripts\Activate.ps1
- python -m pip install --upgrade pip
- pip install -e services/api
 
-# 4. Generate API-driven types
- make types
-
-# 5. Start the stack (Docker Desktop required)
- make dev
+# 4. Run the guided setup (handles installs, type generation, and Docker)
+ py -3 scripts\fusionfutures_setup.py
 ```
 
 > **Raspberry Pi Note:** Replace Node.js/Python installers above with `sudo apt install nodejs npm python3 python3-venv` or use `asdf` from source.
+
+### Setup Automation Flags
+
+- `python scripts/fusionfutures_setup.py --skip-install` &mdash; reuse existing dependencies and only restart Docker.
+- `python scripts/fusionfutures_setup.py --skip-types` &mdash; skip TypeScript generation if the API schema is unreachable.
+- `python scripts/fusionfutures_setup.py --allow-type-failures` &mdash; continue running even when schema generation fails (useful offline).
+- `python scripts/fusionfutures_setup.py --skip-docker` &mdash; prepare dependencies without starting containers (e.g., CI runs).
+
+The setup helper validates the presence of Docker, Node.js, and pnpm up front, printing actionable remediation hints for any
+missing prerequisite before exiting to keep you informed.
 
 ## Debugging Essentials
 
 - **Structured Logging:** Both frontend and backend emit JSON-formatted logs annotated with correlation IDs.
 - **On-Screen Guidance:** The web UI exposes a collapsible “Debug Console” banner showing API health, log hints, and safe-mode toggles.
-- **CLI Visibility:** `make logs` tails Docker and application logs with color-coded severity markers.
+- **CLI Visibility:** `docker compose -f infra/docker/docker-compose.yml --project-name fusion_futures logs -f --tail=200` tails
+  Docker and application logs with color-coded severity markers.
 - **Tracing Requests:** Outbound requests attach an `X-Request-ID` header allowing cross-service correlation.
 
 ### Troubleshooting `pip install -e services/api`
@@ -97,7 +93,8 @@ Fusion Futures is a security-first, developer-friendly monorepo comprised of:
 - `pnpm lint` for ESLint + Prettier.
 - `pnpm test` for unit tests (React Testing Library + Vitest).
 - `pytest` for backend unit and integration tests.
-- `make e2e` (subset of `make dev`) runs smoke tests hitting `/api/healthz` and CRUD endpoints.
+- `pytest services/api/tests/test_health.py services/api/tests/test_demo_crud.py` runs backend smoke tests hitting `/api/healthz`
+  and CRUD endpoints (mirrors the automated smoke coverage).
 - CI enforces linting, typing, and test suites via GitHub Actions.
 
 ## Deployment Snapshot
@@ -108,7 +105,7 @@ Fusion Futures is a security-first, developer-friendly monorepo comprised of:
 ## Support & Contributions
 
 1. Review coding conventions embedded in per-file headers and AGENTS (when present).
-2. Run `make help` to list task automations.
-3. Submit PRs using the provided `make pr-ready` (future automation) ensuring tests pass.
+2. Use `python scripts/fusionfutures_setup.py --help` to explore automation flags.
+3. Submit PRs ensuring linting/tests pass and referencing setup script usage where relevant.
 
 Happy building — and keep security, clarity, and empathy front-of-mind.

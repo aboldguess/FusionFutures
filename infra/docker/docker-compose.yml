@@ -2,7 +2,7 @@
 # File: infra/docker/docker-compose.yml
 # Purpose: Production-ready docker-compose configuration orchestrating the stack.
 # Structure: Defines services for web, api, postgres, pgadmin, caddy, redis, and backups.
-# Usage: Invoked via `make dev` or `docker compose` commands.
+# Usage: Invoked via `python scripts/fusionfutures_setup.py` or direct `docker compose` commands.
 # ============================================================================
 version: "3.9"
 

@@ -14,8 +14,9 @@ const DebuggingPage = () => {
     <section className="space-y-4">
       <header className="debug-banner" role="note" aria-label="Debug console instructions">
         <p>
-          Copy the correlation ID below into the FastAPI logs to trace activity end-to-end.
-          Use <code>make logs</code> to tail the combined stream with highlighting.
+          Copy the correlation ID below into the FastAPI logs to trace activity end-to-end. Run
+          <code>docker compose -f infra/docker/docker-compose.yml --project-name fusion_futures logs -f --tail=200</code> to tail
+          the combined stream with highlighting.
         </p>
       </header>
       <div className="rounded-lg border border-slate-200 bg-white p-4 shadow dark:border-slate-700 dark:bg-slate-900">

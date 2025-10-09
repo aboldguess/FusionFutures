@@ -4,7 +4,8 @@
  * File: scripts/generate-types.mjs
  * Purpose: Fetch FastAPI OpenAPI schema and generate TypeScript definitions for the monorepo.
  * Structure: Uses openapi-typescript to convert the schema, writes output into packages/types.
- * Usage: Invoked via `make types` or `pnpm types`.
+ * Usage: Invoked via `node scripts/generate-types.mjs`, `pnpm types`, or automatically during
+ *        `scripts/fusionfutures_setup.py` execution.
  * ============================================================================
  */
 import { createWriteStream } from "node:fs";
