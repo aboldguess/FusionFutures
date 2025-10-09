@@ -66,13 +66,20 @@ def run_command(command: List[str], description: str, check: bool = True) -> Non
         logging.info("✅ %s completed", description)
 
 
-def check_prerequisites() -> None:
-    """Ensure core tooling is available before continuing."""
+def check_prerequisites(skip_docker: bool) -> None:
+    """
+    Ensure core tooling is available before continuing, optionally bypassing Docker checks.
+
+    Args:
+        skip_docker: When True, Docker tooling validation is skipped so the script can
+            prepare dependencies on hosts without Docker (e.g., CI runners).
+    """
     required_tools = {
         "node": "Install Node.js 18+ from https://nodejs.org/ or via your package manager.",
         "pnpm": "Install pnpm from https://pnpm.io/installation or via `npm install -g pnpm@latest`.",
-        "docker": "Install Docker Desktop (Windows/macOS) or Docker Engine (Linux/Raspberry Pi).",
     }
+    if not skip_docker:
+        required_tools["docker"] = "Install Docker Desktop (Windows/macOS) or Docker Engine (Linux/Raspberry Pi)."
 
     missing: List[str] = []
     for tool, hint in required_tools.items():
@@ -82,16 +89,19 @@ def check_prerequisites() -> None:
         else:
             logging.debug("Found %s at %s", tool, shutil.which(tool))
 
-    # Docker Compose might be v2 (docker compose) or the legacy binary docker-compose
-    if shutil.which("docker") is None:
-        missing.append("docker")
+    # Docker Compose might be v2 (docker compose) or the legacy binary docker-compose.
+    if not skip_docker:
+        if shutil.which("docker") is None:
+            missing.append("docker")
+        else:
+            compose_supported = _docker_compose_available()
+            if not compose_supported:
+                logging.error(
+                    "Docker Compose v2 not detected. Install Docker Desktop >= 4.24 or the standalone docker-compose plugin."
+                )
+                missing.append("docker compose")
     else:
-        compose_supported = _docker_compose_available()
-        if not compose_supported:
-            logging.error(
-                "Docker Compose v2 not detected. Install Docker Desktop >= 4.24 or the standalone docker-compose plugin."
-            )
-            missing.append("docker compose")
+        logging.debug("Docker checks skipped by user request (non-container environment assumed).")
 
     if sys.version_info < (3, 11):
         raise SetupError(
@@ -248,7 +258,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     logging.info("Repository root: %s", REPO_ROOT)
 
     try:
-        check_prerequisites()
+        check_prerequisites(skip_docker=args.skip_docker)
 
         if not args.skip_install:
             ensure_pnpm_dependencies()
