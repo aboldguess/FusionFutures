@@ -12,7 +12,8 @@ build-backend = "hatchling.build"
 name = "fusion_futures_api"
 version = "0.1.0"
 description = "Modular FastAPI service with plugin routers and event bus"
-requires-python = ">=3.11"
+# Pin below 3.13 because pydantic-core wheels are not yet published for 3.13 on Windows.
+requires-python = ">=3.11,<3.13"
 dependencies = [
   "fastapi==0.111.0",
   "uvicorn[standard]==0.29.0",
