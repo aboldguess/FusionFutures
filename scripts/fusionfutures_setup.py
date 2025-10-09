@@ -42,6 +42,33 @@ def configure_logging(verbose: bool) -> None:
     )
 
 
+def _prepare_command(command: List[str]) -> List[str]:
+    """Resolve executable paths and handle Windows PowerShell wrappers for commands."""
+
+    if not command:
+        raise ValueError("Command list cannot be empty.")
+
+    executable = command[0]
+    resolved = shutil.which(executable)
+
+    if resolved is None:
+        return command
+
+    if platform.system().lower().startswith("win") and resolved.lower().endswith(".ps1"):
+        return [
+            "powershell.exe",
+            "-NoLogo",
+            "-NoProfile",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+            resolved,
+            *command[1:],
+        ]
+
+    return [resolved, *command[1:]]
+
+
 def run_command(command: List[str], description: str, check: bool = True) -> None:
     """
     Execute a subprocess while streaming output to stdout for transparency.
@@ -52,7 +79,9 @@ def run_command(command: List[str], description: str, check: bool = True) -> Non
         check: If True, raise SetupError on non-zero exit codes.
     """
     logging.info("▶️ %s", description)
-    process = subprocess.Popen(command, cwd=REPO_ROOT, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+    prepared_command = _prepare_command(command)
+    logging.debug("Executing command: %s", prepared_command)
+    process = subprocess.Popen(prepared_command, cwd=REPO_ROOT, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
     assert process.stdout is not None  # for type checkers
     for line in process.stdout:
         sys.stdout.write(line)
