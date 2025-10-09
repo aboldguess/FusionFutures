@@ -24,8 +24,9 @@ Fusion Futures is a security-first, developer-friendly monorepo comprised of:
  cd FusionFutures
 
 # 2. Prepare Node and Python environments (recommended via asdf)
+ # NOTE: Python 3.13 is not yet supported because pydantic-core wheels are unavailable for Windows users.
  asdf install nodejs latest
- asdf install python latest
+ asdf install python 3.12.3
 
 # 3. Bootstrap dependencies
  npm install -g pnpm@latest
@@ -49,6 +50,7 @@ Fusion Futures is a security-first, developer-friendly monorepo comprised of:
  Set-Location FusionFutures
 
 # 2. Install Node + Python (e.g., winget)
+# Stick with Python 3.12.x until pydantic publishes Windows wheels for 3.13 to avoid forced Rust builds.
  winget install OpenJS.NodeJS.LTS
  winget install Python.Python.3.12
 
@@ -75,6 +77,13 @@ Fusion Futures is a security-first, developer-friendly monorepo comprised of:
 - **On-Screen Guidance:** The web UI exposes a collapsible “Debug Console” banner showing API health, log hints, and safe-mode toggles.
 - **CLI Visibility:** `make logs` tails Docker and application logs with color-coded severity markers.
 - **Tracing Requests:** Outbound requests attach an `X-Request-ID` header allowing cross-service correlation.
+
+### Troubleshooting `pip install -e services/api`
+
+- **Symptom:** `pip` reports `Cargo, the Rust package manager, is not installed` when preparing pydantic-core metadata.
+- **Root Cause:** When using Python 3.13 on Windows, pydantic-core currently lacks prebuilt wheels. Pip therefore falls back to compiling Rust sources, which fails without Cargo.
+- **Resolution:** Use Python 3.12.x (documented above) or install the Rust toolchain before installing. After downgrading/creating a Python 3.12 environment, rerun `pip install -e services/api[dev]`.
+- **Verification:** Run `python -c "import sys; print(sys.version)"` and ensure the minor version is `3.12` prior to installing dependencies.
 
 ## Security Practices
 
