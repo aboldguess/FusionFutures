@@ -17,8 +17,10 @@ export const DebugConsoleHint = () => (
   >
     <strong className="text-sm">Debugging quick start</strong>
     <p>
-      Open <Link href="/debugging" className="underline">Debug Console</Link> to copy the current correlation ID. Use
-      <code className="mx-1 rounded bg-slate-200 px-1 py-0.5 text-[0.7rem] text-slate-800">make logs</code>
+      Open <Link href="/debugging" className="underline">Debug Console</Link> to copy the current correlation ID. Run
+      <code className="mx-1 rounded bg-slate-200 px-1 py-0.5 text-[0.7rem] text-slate-800">
+        docker compose -f infra/docker/docker-compose.yml --project-name fusion_futures logs -f --tail=200
+      </code>
       in your terminal to stream structured logs with this ID highlighted.
     </p>
     <p>

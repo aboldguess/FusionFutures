@@ -10,7 +10,7 @@
     "format": "pnpm --recursive run format",
     "test": "pnpm --recursive run test",
     "typecheck": "pnpm --recursive run typecheck",
-    "types": "make types"
+    "types": "node scripts/generate-types.mjs"
   },
   "devDependencies": {
     "@commitlint/cli": "18.6.1",
