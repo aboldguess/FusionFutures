@@ -9,6 +9,7 @@ Usage: Imported by uvicorn (`uvicorn fusion_futures_api.service_entrypoint:creat
 from __future__ import annotations
 
 import importlib
+import os
 import pkgutil
 from typing import Callable, List
 
@@ -30,8 +31,21 @@ from fusion_futures_api.core.middleware import (
 from fusion_futures_api.events.bus import EventBus
 
 MODULE_PACKAGE = "fusion_futures_api.modules"
+DEFAULT_FRONTEND_ORIGIN = "http://localhost:3100"
 
 limiter = Limiter(key_func=get_remote_address, default_limits=["100/minute"])
+
+
+def _resolve_frontend_origins() -> List[str]:
+    """Return the list of allowed CORS origins for the frontend."""
+
+    configured = os.getenv("FUSION_FUTURES_FRONTEND_ORIGIN", DEFAULT_FRONTEND_ORIGIN)
+    # Support comma-separated values so multiple preview URLs can be authorised without
+    # code edits. Empty entries are filtered out to avoid FastAPI warnings.
+    origins = [origin.strip() for origin in configured.split(",") if origin.strip()]
+    if not origins:
+        return [DEFAULT_FRONTEND_ORIGIN]
+    return origins
 
 def create_app() -> FastAPI:
     """Create and configure the FastAPI application instance."""
@@ -51,9 +65,12 @@ def create_app() -> FastAPI:
     app.state.event_bus.subscribe("demo.created", log_demo_created)
     configure_auth(app)
 
+    allowed_origins = _resolve_frontend_origins()
+    app.logger.info("Configuring CORS for origins: %s", allowed_origins)
+
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=["http://localhost:3100"],
+        allow_origins=allowed_origins,
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],

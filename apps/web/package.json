@@ -3,9 +3,9 @@
   "name": "fusion-futures-web",
   "private": true,
   "scripts": {
-    "dev": "next dev -p ${PORT:-3100}",
+    "dev": "next dev -p ${PORT:-3100} -H ${HOST:-127.0.0.1}",
     "build": "next build",
-    "start": "next start -p ${PORT:-3100}",
+    "start": "next start -p ${PORT:-3100} -H ${HOST:-127.0.0.1}",
     "lint": "next lint",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,css,md}\"",
     "test": "vitest run",

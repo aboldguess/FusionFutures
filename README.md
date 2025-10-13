@@ -31,8 +31,11 @@ Fusion Futures is a security-first, developer-friendly monorepo comprised of:
 # 3. Bootstrap tooling once (installs pnpm globally)
  npm install -g pnpm@latest
 
-# 4. Run the guided setup (installs dependencies, generates types, launches Docker)
- python scripts/fusionfutures_setup.py
+# 4. Launch the local preview (installs deps on first run, starts web+API servers)
+python scripts/launch_fusionfutures_local.py
+
+# Optional: use --help to view flags such as custom ports or production mode
+python scripts/launch_fusionfutures_local.py --help
 ```
 
 ## Quick Start (Windows PowerShell)
@@ -50,11 +53,16 @@ Fusion Futures is a security-first, developer-friendly monorepo comprised of:
 # 3. Install pnpm globally (once per machine)
  npm install -g pnpm@latest
 
-# 4. Run the guided setup (handles installs, type generation, and Docker)
- py -3 scripts\fusionfutures_setup.py
+# 4. Launch the local preview (installs deps on first run, starts web+API servers)
+py -3 scripts\launch_fusionfutures_local.py
+
+# Optional: inspect available flags (e.g. custom ports or production mode)
+py -3 scripts\launch_fusionfutures_local.py --help
 ```
 
 > **Raspberry Pi Note:** Replace Node.js/Python installers above with `sudo apt install nodejs npm python3 python3-venv` or use `asdf` from source.
+>
+> **Docker-focused workflow:** When you are ready to evaluate the fully containerised stack, switch back to `python scripts/fusionfutures_setup.py` which provisions Docker services alongside dependency installation.
 
 ### Setup Automation Flags
 
@@ -65,6 +73,16 @@ Fusion Futures is a security-first, developer-friendly monorepo comprised of:
 
 The setup helper validates the presence of Docker, Node.js, and pnpm up front, printing actionable remediation hints for any
 missing prerequisite before exiting to keep you informed.
+
+### Local Preview Script Flags
+
+- `--frontend-port` / `--frontend-host` &mdash; expose the Next.js UI on a custom interface or port (defaults to `127.0.0.1:3100`).
+- `--backend-port` / `--backend-host` &mdash; control the FastAPI server binding (defaults to `127.0.0.1:8000`).
+- `--mode production` &mdash; pre-build the Next.js app and run it with `next start` instead of the hot-reloading dev server.
+- `--skip-installs` &mdash; assume dependencies are already installed to speed up repeated launches.
+- `--verbose` &mdash; print detailed setup logs, ideal for debugging permission or tooling issues.
+
+The script sets `FUSION_FUTURES_FRONTEND_ORIGIN` automatically so API CORS rules match your chosen frontend URL, streams service logs with clear prefixes, and shuts both processes down cleanly when you press `Ctrl+C`.
 
 ## Debugging Essentials
 
