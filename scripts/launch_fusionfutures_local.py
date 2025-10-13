@@ -32,6 +32,12 @@ PYTHON_MIN_VERSION = (3, 11)
 DEFAULT_FRONTEND_PORT = 3100
 DEFAULT_BACKEND_PORT = 8000
 
+# Map external commands to remediation hints so we can give actionable feedback when
+# subprocesses fail to spawn (for example when pnpm is missing on a new machine).
+COMMAND_HINTS: Dict[str, str] = {
+    "pnpm": "Install pnpm via `npm install -g pnpm@latest` or follow https://pnpm.io/installation.",
+}
+
 
 class LaunchError(RuntimeError):
     """Raised when launching the local environment fails."""
@@ -112,7 +118,7 @@ def check_prerequisites() -> None:
         )
 
     required_tools = {
-        "pnpm": "Install pnpm from https://pnpm.io/installation or via `npm install -g pnpm@latest`.",
+        "pnpm": COMMAND_HINTS["pnpm"],
     }
 
     missing = []
@@ -151,17 +157,29 @@ def ensure_virtualenv() -> None:
 
 
 def run_command(command: Iterable[str], description: str, cwd: Optional[Path] = None, env: Optional[Dict[str, str]] = None) -> None:
-    """Execute a subprocess while streaming its combined stdout/stderr for transparency."""
+    """Execute a subprocess while streaming logs and raise a helpful error if the command is missing."""
 
     logging.info("▶️ %s", description)
-    process = subprocess.Popen(
-        list(command),
-        cwd=str(cwd or REPO_ROOT),
-        env=env,
+    command_list = list(command)
+    try:
+        process = subprocess.Popen(
+            command_list,
+            cwd=str(cwd or REPO_ROOT),
+            env=env,
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
         text=True,
-    )
+        )
+    except FileNotFoundError as exc:
+        missing_executable = Path(command_list[0]).name
+        hint = COMMAND_HINTS.get(
+            missing_executable,
+            "Ensure the command is installed and available on your PATH before rerunning.",
+        )
+        logging.error("Command '%s' could not be found. %s", missing_executable, hint)
+        raise LaunchError(
+            "Command '{cmd}' is unavailable. {hint}".format(cmd=missing_executable, hint=hint)
+        ) from exc
     assert process.stdout is not None
     for line in process.stdout:
         logging.info("%s", line.rstrip())
@@ -183,8 +201,8 @@ def install_dependencies(skip_installs: bool) -> None:
     pip_executable = _venv_executable("pip")
     run_command([str(pip_executable), "install", "--upgrade", "pip", "setuptools", "wheel"], "Upgrading pip tooling")
     run_command(
-        [str(pip_executable), "install", "-e", "services/api"],
-        "Installing FastAPI service dependencies",
+        [str(pip_executable), "install", "-r", "reqs.txt"],
+        "Installing Python project requirements",
     )
 
     run_command(["pnpm", "install"], "Installing pnpm workspace dependencies", cwd=REPO_ROOT)

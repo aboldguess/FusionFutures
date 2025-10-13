@@ -24,14 +24,22 @@ Fusion Futures is a security-first, developer-friendly monorepo comprised of:
  cd FusionFutures
 
 # 2. Prepare Node and Python environments (recommended via asdf)
- # NOTE: Python 3.13 is not yet supported because pydantic-core wheels are unavailable for Windows users.
- asdf install nodejs latest
- asdf install python 3.12.3
+# NOTE: Python 3.13 is not yet supported because pydantic-core wheels are unavailable for Windows users.
+asdf install nodejs latest
+asdf install python 3.12.3
 
-# 3. Bootstrap tooling once (installs pnpm globally)
- npm install -g pnpm@latest
+# 3. Create and activate a project-local virtual environment
+python3 -m venv .venv
+source .venv/bin/activate
 
-# 4. Launch the local preview (installs deps on first run, starts web+API servers)
+# 4. Install Python requirements (upgrades pip tooling automatically)
+python -m pip install --upgrade pip
+python -m pip install -r reqs.txt
+
+# 5. Bootstrap tooling once (installs pnpm globally)
+npm install -g pnpm@latest
+
+# 6. Launch the local preview (installs deps on first run, starts web+API servers)
 python scripts/launch_fusionfutures_local.py
 
 # Optional: use --help to view flags such as custom ports or production mode
@@ -47,13 +55,21 @@ python scripts/launch_fusionfutures_local.py --help
 
 # 2. Install Node + Python (e.g., winget)
 # Stick with Python 3.12.x until pydantic publishes Windows wheels for 3.13 to avoid forced Rust builds.
- winget install OpenJS.NodeJS.LTS
- winget install Python.Python.3.12
+winget install OpenJS.NodeJS.LTS
+winget install Python.Python.3.12
 
-# 3. Install pnpm globally (once per machine)
- npm install -g pnpm@latest
+# 3. Create and activate a project-local virtual environment
+py -3 -m venv .venv
+.\.venv\Scripts\Activate.ps1
 
-# 4. Launch the local preview (installs deps on first run, starts web+API servers)
+# 4. Install Python requirements (upgrades pip tooling automatically)
+python -m pip install --upgrade pip
+python -m pip install -r reqs.txt
+
+# 5. Install pnpm globally (once per machine)
+npm install -g pnpm@latest
+
+# 6. Launch the local preview (installs deps on first run, starts web+API servers)
 py -3 scripts\launch_fusionfutures_local.py
 
 # Optional: inspect available flags (e.g. custom ports or production mode)

@@ -1,0 +1,13 @@
+# ============================================================================
+# File: reqs.txt
+# Purpose: Centralise Python dependencies required for local development and
+#          automation scripts in the Fusion Futures monorepo so developers can
+#          bootstrap environments quickly and reproducibly.
+# Structure: Comment header followed by standard pip requirement entries.
+#            Includes an editable install of the FastAPI service with its dev
+#            extras to expose testing and linting tooling.
+# Usage: Activate your virtual environment and run
+#            pip install -r reqs.txt
+#        to install all required Python packages.
+# ============================================================================
+-e ./services/api[dev]
