@@ -20,6 +20,8 @@ import sys
 from pathlib import Path
 from typing import Iterable, List, Optional
 
+from command_helpers import prepare_command
+
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_COMPOSE_FILE = REPO_ROOT / "infra" / "docker" / "docker-compose.yml"
 DEFAULT_PROJECT_NAME = "fusion_futures"
@@ -42,31 +44,7 @@ def configure_logging(verbose: bool) -> None:
     )
 
 
-def _prepare_command(command: List[str]) -> List[str]:
-    """Resolve executable paths and handle Windows PowerShell wrappers for commands."""
-
-    if not command:
-        raise ValueError("Command list cannot be empty.")
-
-    executable = command[0]
-    resolved = shutil.which(executable)
-
-    if resolved is None:
-        return command
-
-    if platform.system().lower().startswith("win") and resolved.lower().endswith(".ps1"):
-        return [
-            "powershell.exe",
-            "-NoLogo",
-            "-NoProfile",
-            "-ExecutionPolicy",
-            "Bypass",
-            "-File",
-            resolved,
-            *command[1:],
-        ]
-
-    return [resolved, *command[1:]]
+_prepare_command = prepare_command
 
 
 def run_command(command: List[str], description: str, check: bool = True) -> None:

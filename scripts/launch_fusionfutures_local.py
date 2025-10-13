@@ -26,6 +26,8 @@ import sys
 from pathlib import Path
 from typing import Dict, Iterable, Optional
 
+from command_helpers import prepare_command
+
 REPO_ROOT = Path(__file__).resolve().parents[1]
 VENV_DIR = REPO_ROOT / ".venv"
 PYTHON_MIN_VERSION = (3, 11)
@@ -161,14 +163,17 @@ def run_command(command: Iterable[str], description: str, cwd: Optional[Path] = 
 
     logging.info("▶️ %s", description)
     command_list = list(command)
+    # Normalise the command so Windows PowerShell shims (e.g. pnpm.ps1) launch correctly.
+    prepared_command = prepare_command(command_list)
+    logging.debug("Resolved command for execution: %s", prepared_command)
     try:
         process = subprocess.Popen(
-            command_list,
+            prepared_command,
             cwd=str(cwd or REPO_ROOT),
             env=env,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-        text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True,
         )
     except FileNotFoundError as exc:
         missing_executable = Path(command_list[0]).name
