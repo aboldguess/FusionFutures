@@ -36,7 +36,10 @@ source .venv/bin/activate
 python -m pip install --upgrade pip
 python -m pip install -r reqs.txt
 
-# 5. Bootstrap tooling once (installs pnpm globally)
+# 5. Bootstrap tooling once (enable pnpm via Corepack or install globally)
+#    Preferred (respects the Node version pinned by asdf):
+corepack enable pnpm
+#    Fallback for environments without Corepack:
 npm install -g pnpm@latest
 
 # 6. Launch the local preview (installs deps on first run, starts web+API servers)
@@ -66,7 +69,10 @@ py -3 -m venv .venv
 python -m pip install --upgrade pip
 python -m pip install -r reqs.txt
 
-# 5. Install pnpm globally (once per machine)
+# 5. Enable pnpm via Corepack (preferred) or install globally once per machine
+#    Preferred (available in Node.js 16.13+):
+corepack enable pnpm
+#    Fallback when Corepack is unavailable:
 npm install -g pnpm@latest
 
 # 6. Launch the local preview (installs deps on first run, starts web+API servers)
@@ -107,6 +113,25 @@ The script sets `FUSION_FUTURES_FRONTEND_ORIGIN` automatically so API CORS rules
 - **CLI Visibility:** `docker compose -f infra/docker/docker-compose.yml --project-name fusion_futures logs -f --tail=200` tails
   Docker and application logs with color-coded severity markers.
 - **Tracing Requests:** Outbound requests attach an `X-Request-ID` header allowing cross-service correlation.
+
+### Troubleshooting pnpm Installation
+
+- **Symptom:** `Command 'pnpm' could not be found` during `scripts/launch_fusionfutures_local.py`.
+- **Root Cause:** pnpm is not yet enabled on your PATH. Corepack ships with recent Node.js releases but must be activated once per machine.
+- **Resolution (Linux/macOS/WSL/Raspberry Pi OS):**
+  ```bash
+  corepack enable pnpm
+  corepack prepare pnpm@latest --activate
+  pnpm --version
+  ```
+- **Resolution (Windows PowerShell):**
+  ```powershell
+  corepack enable pnpm
+  corepack prepare pnpm@latest --activate
+  pnpm --version
+  ```
+- **Fallback:** If Corepack is unavailable, install pnpm globally with `npm install -g pnpm@latest` and re-run the launcher.
+- **Verification:** `pnpm --version` should print a semantic version (e.g., `9.1.0`). If the launcher still fails, re-run with `--verbose` to surface the resolved pnpm path in the logs.
 
 ### Troubleshooting `pip install -e services/api`
 
