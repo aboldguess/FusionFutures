@@ -4,9 +4,9 @@
   "private": true,
   "description": "Fusion Futures web platform providing role-based dashboards, social feed, and event management.",
   "scripts": {
-    "dev": "next dev --hostname 0.0.0.0 --port ${PORT:-3000}",
+    "dev": "node ../../scripts/run-next-web.mjs dev",
     "build": "next build",
-    "start": "next start --hostname 0.0.0.0 --port ${PORT:-3000}",
+    "start": "node ../../scripts/run-next-web.mjs start",
     "lint": "eslint . --ext .ts,.tsx,.js,.jsx --max-warnings=0",
     "test": "vitest run --passWithNoTests"
   },
