@@ -12,6 +12,7 @@ import { z } from 'zod';
 import { useState } from 'react';
 import { logger } from '@/lib/logger';
 import { usePlatformUser } from '@/hooks/use-platform-user';
+import { useImpactFeed } from '@/hooks/use-impact-feed';
 
 const schema = z.object({
   content: z
@@ -32,11 +33,26 @@ export function CreatePostForm() {
     }
   });
   const { activeUser } = usePlatformUser();
+  const { addPost } = useImpactFeed();
   const [toast, setToast] = useState<string | null>(null);
 
   const onSubmit = (data: FormData) => {
-    logger.info('New impact update drafted', { author: activeUser.profile.name, data });
-    setToast('Update saved locally. In production this would notify your network.');
+    const trimmedLink = data.link?.trim();
+
+    // Ensure validation metadata and author linkage are captured before persisting the new update.
+    addPost({
+      authorId: activeUser.id,
+      content: data.content.trim(),
+      link: trimmedLink ? trimmedLink : undefined,
+      tags: [activeUser.role]
+    });
+
+    logger.info('New impact update published to context', {
+      author: activeUser.profile.name,
+      role: activeUser.role
+    });
+
+    setToast('Update published to your local feed. In production this would notify your network.');
     reset();
   };
 
