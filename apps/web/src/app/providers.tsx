@@ -12,6 +12,7 @@ import { ThemeProvider } from 'next-themes';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { logger } from '@/lib/logger';
 import { PlatformUserProvider } from '@/hooks/use-platform-user';
+import { ImpactFeedProvider } from '@/hooks/use-impact-feed';
 
 interface ProvidersProps {
   children: ReactNode;
@@ -25,7 +26,9 @@ export function Providers({ children }: ProvidersProps) {
   return (
     <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
       <QueryClientProvider client={client}>
-        <PlatformUserProvider>{children}</PlatformUserProvider>
+        <PlatformUserProvider>
+          <ImpactFeedProvider>{children}</ImpactFeedProvider>
+        </PlatformUserProvider>
       </QueryClientProvider>
     </ThemeProvider>
   );
