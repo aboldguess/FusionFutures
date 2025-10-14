@@ -1,27 +1,78 @@
 /**
  * @file platform.ts
- * @description Mini README: Contains TypeScript types shared across the Fusion Futures app, including user, post, event,
- * and organisation models. These typings keep UI components safe and self-documenting.
+ * @description Mini README: Centralises TypeScript types for authentication, invitations, organisations, and
+ * collaborative content across the Fusion Futures platform. The file groups related type aliases and interfaces so
+ * developers can reason about account flows and UI data at a glance. Structure: role enumerations, auth-centric
+ * models, organisation models, and social content records.
  */
 
-export type UserRole = 'learner' | 'jobseeker' | 'employer' | 'educator' | 'admin' | 'superadmin';
+export type UserRole = 'superadmin' | 'admin' | 'user';
+
+export type AccountStatus = 'active' | 'invited' | 'suspended';
+
+export type InvitationStatus = 'pending' | 'accepted' | 'revoked' | 'expired';
+
+export type OrganisationType = 'institution' | 'employer' | 'hub';
+
+export type OrganisationStatus = 'pending' | 'approved' | 'rejected';
+
+export interface PlatformProfile {
+  name: string;
+  title: string;
+  avatar: string;
+  location: string;
+  bio: string;
+  linkedin?: string;
+}
 
 export interface PlatformUser {
   id: string;
   role: UserRole;
-  profile: {
-    name: string;
-    title: string;
-    avatar: string;
-    location: string;
-    bio: string;
-    linkedin?: string;
-  };
+  profile: PlatformProfile;
   organisation?: {
     name: string;
-    type: 'employer' | 'institution' | 'hub';
+    type: OrganisationType;
     colour: string;
   };
+}
+
+export interface PlatformAccount extends PlatformUser {
+  email: string;
+  status: AccountStatus;
+  passwordHash: string;
+  organisationAdmin?: boolean;
+  invitedBy?: string;
+  createdAt: string;
+  lastLogin?: string;
+}
+
+export interface OrganisationRecord {
+  id: string;
+  name: string;
+  type: OrganisationType;
+  status: OrganisationStatus;
+  brandColour: string;
+  createdAt: string;
+  createdBy: string;
+  admins: string[];
+}
+
+export interface InvitationRecord {
+  code: string;
+  email: string;
+  role: UserRole;
+  issuedBy: string;
+  issuedAt: string;
+  expiresAt: string;
+  status: InvitationStatus;
+  organisationId?: string;
+  organisationNameSuggestion?: string;
+  message?: string;
+}
+
+export interface SessionRecord {
+  userId: string;
+  issuedAt: string;
 }
 
 export interface ImpactPost {

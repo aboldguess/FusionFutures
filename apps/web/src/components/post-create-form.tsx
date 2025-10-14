@@ -36,6 +36,14 @@ export function CreatePostForm() {
   const { addPost } = useImpactFeed();
   const [toast, setToast] = useState<string | null>(null);
 
+  if (!activeUser) {
+    return (
+      <p className="rounded-3xl border border-dashed border-white/10 bg-slate-900/40 p-6 text-sm text-rose-200">
+        Please sign in to publish updates and engage with the community feed.
+      </p>
+    );
+  }
+
   const onSubmit = (data: FormData) => {
     const trimmedLink = data.link?.trim();
 

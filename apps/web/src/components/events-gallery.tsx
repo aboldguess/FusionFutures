@@ -1,19 +1,22 @@
 /**
  * @file events-gallery.tsx
  * @description Mini README: Visualises events in a responsive gallery with key metadata, enabling quick discovery of
- * upcoming opportunities.
+ * upcoming opportunities. Resolves event owners via the live auth context so new administrators appear without code
+ * changes.
  */
 
 import Image from 'next/image';
-import { events } from '@/data/events';
-import { users } from '@/data/users';
 import { format } from 'date-fns';
+import { events } from '@/data/events';
+import { usePlatformUser } from '@/hooks/use-platform-user';
 
 export function EventsGallery() {
+  const { accounts } = usePlatformUser();
+
   return (
     <div className="grid gap-6 md:grid-cols-2">
       {events.map((event) => {
-        const owner = users.find((user) => user.id === event.ownerId);
+        const owner = accounts.find((account) => account.id === event.ownerId);
         return (
           <article key={event.id} className="overflow-hidden rounded-3xl border border-white/10 bg-slate-900/70 shadow-soft">
             <div className="relative h-44 w-full">
@@ -42,7 +45,9 @@ export function EventsGallery() {
                 )}
                 <div>
                   <h3 className="text-lg font-semibold text-white">{event.title}</h3>
-                  <p className="text-xs text-slate-300">Hosted by {owner?.profile.name}</p>
+                  <p className="text-xs text-slate-300">
+                    Hosted by {owner?.profile.name ?? 'unassigned – allocate an owner via Admin > Manage Users'}
+                  </p>
                 </div>
               </div>
               <p className="text-sm text-slate-300">{event.summary}</p>
