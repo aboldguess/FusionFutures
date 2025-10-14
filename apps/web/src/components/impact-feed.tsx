@@ -10,7 +10,6 @@ import Image from 'next/image';
 import { posts } from '@/data/posts';
 import { users } from '@/data/users';
 import { formatDistanceToNow } from 'date-fns';
-import Link from 'next/link';
 import { useState } from 'react';
 import { clsx } from 'clsx';
 import { logger } from '@/lib/logger';
@@ -60,14 +59,15 @@ export function ImpactFeed() {
             </header>
             <p className="mt-4 text-slate-200">{post.content}</p>
             {post.link && (
-              <Link
+              <a
                 href={post.link}
                 target="_blank"
+                rel="noreferrer noopener"
                 className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-brand hover:text-brand-light"
                 onClick={() => logger.info('Tracked external post link click', { postId: post.id })}
               >
                 Visit linked resource ↗
-              </Link>
+              </a>
             )}
             <footer className="mt-6 flex flex-wrap items-center gap-4 text-xs text-slate-400">
               <span>{formatDistanceToNow(new Date(post.createdAt), { addSuffix: true })}</span>

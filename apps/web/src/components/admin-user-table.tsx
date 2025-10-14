@@ -7,6 +7,7 @@
 'use client';
 
 import { users } from '@/data/users';
+import type { PlatformUser } from '@/types/platform';
 import { useMemo, useState } from 'react';
 import { clsx } from 'clsx';
 
@@ -16,12 +17,13 @@ const statusPalette = {
 };
 
 type Status = keyof typeof statusPalette;
+type UserWithStatus = PlatformUser & { status: Status };
 
 export function AdminUserTable() {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<Status | 'all'>('all');
 
-  const rows = useMemo(() => {
+  const rows = useMemo<UserWithStatus[]>(() => {
     return users
       .map((user, index) => ({
         ...user,

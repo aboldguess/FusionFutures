@@ -16,7 +16,6 @@ const isDebugEnabled = () => {
   try {
     return localStorage.getItem('ff-debug') === 'true';
   } catch (error) {
-    // eslint-disable-next-line no-console -- Fallback logs only when localStorage is unavailable.
     console.warn(`${LOG_PREFIX} Unable to read ff-debug flag from localStorage`, error);
     return false;
   }
@@ -28,7 +27,6 @@ function emit(level: LogLevel, message: string, payload?: Record<string, unknown
   }
 
   const timestamp = new Date().toISOString();
-  // eslint-disable-next-line no-console -- debugging utility intentionally exposes console output.
   console[level](`${LOG_PREFIX} ${timestamp} ${level.toUpperCase()}: ${message}`, payload ?? '');
 }
 

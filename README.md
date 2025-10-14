@@ -22,13 +22,18 @@ The repository is structured as a lightweight monorepo to keep shared types and 
 
 ## Quick start scripts
 
-A helper script is included to streamline local setup:
+Choose the helper that matches your operating system so you avoid WSL-specific errors on Windows:
 
-```bash
-bash scripts/bootstrap-web.sh
-```
+- **Linux / macOS / WSL**
+  ```bash
+  bash scripts/bootstrap-web.sh
+  ```
+- **Windows (PowerShell 7+)**
+  ```powershell
+  pwsh -File scripts/bootstrap-fusion-futures-web.ps1
+  ```
 
-The script installs dependencies, copies example environment variables, and explains the available commands. Feel free to read it before executing so you understand each step.
+Each script installs dependencies, copies example environment variables, and prints the available commands. Feel free to read the files beforehand so you understand each step.
 
 ## Manual setup
 
@@ -61,18 +66,31 @@ cd FusionFutures
 
 ### 3. Install dependencies
 
-```bash
-npm install
-npm install --prefix apps/web
-```
+- **Linux / Raspberry Pi / macOS**
+  ```bash
+  npm install
+  npm install --prefix apps/web
+  ```
+
+- **Windows (PowerShell)**
+  ```powershell
+  npm install
+  npm install --prefix apps/web
+  ```
 
 ### 4. Configure environment variables
 
 Copy the example file and tailor it to your needs (ports, feature flags, etc.).
 
-```bash
-cp apps/web/.env.example apps/web/.env.local
-```
+- **Linux / macOS / WSL**
+  ```bash
+  cp apps/web/.env.example apps/web/.env.local
+  ```
+
+- **Windows (PowerShell)**
+  ```powershell
+  Copy-Item apps/web/.env.example apps/web/.env.local
+  ```
 
 Adjust the following variables:
 
@@ -81,8 +99,21 @@ Adjust the following variables:
 
 ### 5. Run the development server
 
+- **Linux / macOS / WSL**
+  ```bash
+  PORT=4000 npm run dev:web
+  ```
+
+- **Windows (PowerShell)**
+  ```powershell
+  $env:PORT = 4000
+  npm run dev:web
+  ```
+
+You can also pass the port flag directly to the script (works everywhere):
+
 ```bash
-PORT=4000 npm run dev:web
+npm run dev:web -- --port 4000
 ```
 
 Visit `http://localhost:4000` (or the port you selected). The UI includes clear on-screen instructions, so you never need to flip back to the README while using the product.
@@ -150,8 +181,9 @@ The app is a standard Next.js project. You can deploy with Vercel, Netlify, Azur
 
 | Symptom | Resolution |
 | --- | --- |
-| Port already in use | Change the `PORT` value when running `npm run dev:web`. |
-| Cannot install dependencies | Clear the workspace with `rm -rf node_modules package-lock.json` in the root and web app, then reinstall. |
+| Port already in use | Change the `PORT` value in `.env.local` or when running `npm run dev:web`. |
+| Cannot install dependencies | Clear the workspace with `rm -rf node_modules package-lock.json` (Linux/macOS) or `Remove-Item -Recurse -Force node_modules, package-lock.json` (Windows) in both the root and web app, then reinstall. |
+| PowerShell cannot run the bootstrap script | Start PowerShell as Administrator and run `Set-ExecutionPolicy RemoteSigned -Scope CurrentUser`, then re-run the script. |
 | Styling not applied | Ensure `tailwind.config.ts` and `postcss.config.mjs` remain intact; run `npm run lint:web` to spot configuration drift. |
 
 Happy building! Reach out to the Fusion Futures platform team for further assistance.
