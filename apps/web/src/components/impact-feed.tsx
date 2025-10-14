@@ -1,25 +1,35 @@
 /**
  * @file impact-feed.tsx
  * @description Mini README: Renders the LinkedIn-style impact feed featuring posts, reactions, and quick insights.
- * Includes inline instructions to encourage users to share updates and tracks link clicks for analytics.
+ * Includes inline instructions to encourage users to share updates and tracks link clicks for analytics. The component
+ * now relies on the auth provider for author metadata so invitations and new sign-ups immediately appear in the feed.
  */
 
 'use client';
 
 import Image from 'next/image';
-import { users } from '@/data/users';
 import { formatDistanceToNow } from 'date-fns';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { clsx } from 'clsx';
 import { logger } from '@/lib/logger';
 import { CreatePostForm } from '@/components/post-create-form';
 import { useImpactFeed } from '@/hooks/use-impact-feed';
+import { usePlatformUser } from '@/hooks/use-platform-user';
 
 export function ImpactFeed() {
   const [highlightedPostId, setHighlightedPostId] = useState<string | null>(null);
   const { posts } = useImpactFeed();
+  const { accounts } = usePlatformUser();
 
-  const findAuthor = (id: string) => users.find((user) => user.id === id);
+  const accountDirectory = useMemo(
+    () =>
+      accounts.reduce<Record<string, (typeof accounts)[number]>>((directory, account) => {
+        // Index by account id for quick lookups while rendering posts.
+        directory[account.id] = account;
+        return directory;
+      }, {}),
+    [accounts]
+  );
 
   return (
     <div className="space-y-6">
@@ -30,7 +40,7 @@ export function ImpactFeed() {
         </p>
       ) : (
         posts.map((post) => {
-          const author = findAuthor(post.authorId);
+          const author = accountDirectory[post.authorId];
           const isHighlighted = highlightedPostId === post.id;
 
           return (
@@ -52,8 +62,8 @@ export function ImpactFeed() {
                   />
                 )}
                 <div>
-                  <h3 className="text-lg font-semibold text-white">{author?.profile.name}</h3>
-                  <p className="text-sm text-slate-300">{author?.profile.title}</p>
+                  <h3 className="text-lg font-semibold text-white">{author?.profile.name ?? 'Unknown member'}</h3>
+                  <p className="text-sm text-slate-300">{author?.profile.title ?? 'Role pending assignment'}</p>
                 </div>
                 <button
                   type="button"

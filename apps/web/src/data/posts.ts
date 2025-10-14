@@ -9,7 +9,7 @@ import type { ImpactPost } from '@/types/platform';
 export const posts: ImpactPost[] = [
   {
     id: 'post-1',
-    authorId: 'user-superadmin-1',
+    authorId: 'account-superadmin-001',
     content:
       'SuperAdmins just published the national fusion upskilling framework. Explore the interactive modules and align your talent plans.',
     link: 'https://fusionfutures.org/framework',
@@ -23,7 +23,7 @@ export const posts: ImpactPost[] = [
   },
   {
     id: 'post-2',
-    authorId: 'user-employer-1',
+    authorId: 'account-admin-001',
     content:
       'Stellar Fusion is hosting open mentorship sessions with engineers and data scientists. Secure your slot before places fill up.',
     link: 'https://stellar-fusion.co.uk/mentorship',
@@ -37,7 +37,7 @@ export const posts: ImpactPost[] = [
   },
   {
     id: 'post-3',
-    authorId: 'user-educator-1',
+    authorId: 'account-user-001',
     content:
       'New research collaboration opportunities in plasma diagnostics – educators can onboard projects with a single click.',
     createdAt: '2024-06-16T12:15:00Z',

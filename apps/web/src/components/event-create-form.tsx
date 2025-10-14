@@ -28,7 +28,6 @@ type EventDraft = z.infer<typeof schema>;
 export function EventCreateForm() {
   const { activeUser } = usePlatformUser();
   const [toast, setToast] = useState<string | null>(null);
-
   const form = useForm<EventDraft>({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -41,6 +40,14 @@ export function EventCreateForm() {
       visibility: 'public'
     }
   });
+
+  if (!activeUser) {
+    return (
+      <p className="rounded-3xl border border-dashed border-white/10 bg-slate-900/40 p-6 text-sm text-rose-200">
+        Please sign in to create events. Administrators can approve new requests after login.
+      </p>
+    );
+  }
 
   const onSubmit = (data: EventDraft) => {
     logger.info('Event draft created', { organiser: activeUser.profile.name, data });

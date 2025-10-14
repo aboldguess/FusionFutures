@@ -7,13 +7,19 @@
 'use client';
 
 import { ChangeEvent } from 'react';
+import type { UserRole } from '@/types/platform';
 import { usePlatformUser } from '@/hooks/use-platform-user';
 
 export function UserRoleSelector() {
-  const { switchRole, availableUsers, activeUser } = usePlatformUser();
+  const { switchRole, availableUsers, activeUser, canImpersonate } = usePlatformUser();
 
   const handleChange = (event: ChangeEvent<HTMLSelectElement>) => {
-    const selectedRole = event.target.value as typeof activeUser.role;
+    const selectedRole = event.target.value as UserRole;
+
+    if (!selectedRole) {
+      return;
+    }
+
     switchRole(selectedRole);
   };
 
@@ -21,9 +27,10 @@ export function UserRoleSelector() {
     <label className="text-xs text-slate-300">
       Quick role switcher
       <select
-        value={activeUser.role}
+        value={activeUser?.role ?? 'user'}
         onChange={handleChange}
-        className="ml-2 rounded-full border border-white/10 bg-slate-900 px-3 py-1 text-sm text-white shadow-soft focus:border-brand focus:outline-none"
+        disabled={!canImpersonate}
+        className="ml-2 rounded-full border border-white/10 bg-slate-900 px-3 py-1 text-sm text-white shadow-soft focus:border-brand focus:outline-none disabled:cursor-not-allowed disabled:opacity-60"
       >
         {availableUsers.map((user) => (
           <option key={user.id} value={user.role} className="bg-slate-900">
@@ -31,6 +38,9 @@ export function UserRoleSelector() {
           </option>
         ))}
       </select>
+      {!canImpersonate && (
+        <span className="ml-2 text-[10px] uppercase text-slate-500">Superadmin only</span>
+      )}
     </label>
   );
 }
