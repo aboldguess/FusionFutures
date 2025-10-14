@@ -23,10 +23,13 @@ if (-not (Get-Command npm -ErrorAction SilentlyContinue)) {
 Write-Host '🔧 Installing root dependencies...' -ForegroundColor Cyan
 Push-Location $repoRoot
 try {
+    # Ensure root dependencies install cleanly before moving on to the web app packages.
     npm install
     Write-Host '🔧 Installing web app dependencies...' -ForegroundColor Cyan
     npm install --prefix $webDir
+}
 finally {
+    # Always restore the original working directory even if installation fails.
     Pop-Location
 }
 
