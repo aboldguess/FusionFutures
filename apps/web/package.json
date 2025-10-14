@@ -40,13 +40,14 @@
   },
   "overrides": {
     "typescript": "5.9.3",
-    "@typescript-eslint/eslint-plugin": {
-      "typescript": "5.9.3"
-    },
+    "@typescript-eslint/eslint-plugin": "^8.46.1",
+    "@typescript-eslint/parser": "^8.46.1",
     "ts-api-utils": {
       "typescript": "5.9.3"
     },
     "eslint-config-next": {
+      "@typescript-eslint/eslint-plugin": "^8.46.1",
+      "@typescript-eslint/parser": "^8.46.1",
       "typescript": "5.9.3"
     }
   }
