@@ -16,7 +16,7 @@ help:
 
 .PHONY: dev
 dev: # Start full stack (web, api, postgres, proxy)
-	pnpm install
+        npm install
 	python -m venv .venv && . .venv/bin/activate && pip install -e services/api[dev] || true
 	docker compose -f $(COMPOSE_FILE) --project-name $(PROJECT_NAME) up --build -d
 	@echo "Web UI available on http://localhost:3100"
@@ -49,13 +49,13 @@ types: # Generate API-driven TypeScript definitions
 
 .PHONY: test
 test: # Run full test suite (frontend + backend)
-	pnpm test
+        npm run test --workspaces
 	@if [ ! -d .venv ]; then python -m venv .venv && . .venv/bin/activate && pip install -e services/api[dev]; fi
 	. .venv/bin/activate && pytest
 
 .PHONY: lint
 lint: # Run linters across stack
-	pnpm lint
+        npm run lint --workspaces
 	@if [ ! -d .venv ]; then python -m venv .venv && . .venv/bin/activate && pip install -e services/api[dev]; fi
 	. .venv/bin/activate && ruff check services/api/src
 	. .venv/bin/activate && black --check services/api/src

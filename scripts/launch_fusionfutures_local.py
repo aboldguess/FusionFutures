@@ -6,7 +6,7 @@ Purpose: Provide a one-command, Docker-free launcher for the Fusion Futures web
          platform so evaluators can run the FastAPI backend and Next.js frontend
          locally with sensible defaults.
 Structure: Defines CLI argument parsing, prerequisite validation, dependency
-           bootstrapping (virtual environment + pnpm), and asynchronous process
+          bootstrapping (virtual environment + npm), and asynchronous process
            orchestration with rich logging for quick debugging.
 Usage: Run `python scripts/launch_fusionfutures_local.py` (Linux/macOS/Raspberry
        Pi) or `py -3 scripts\\launch_fusionfutures_local.py` (Windows PowerShell)
@@ -35,9 +35,10 @@ DEFAULT_FRONTEND_PORT = 3100
 DEFAULT_BACKEND_PORT = 8000
 
 # Map external commands to remediation hints so we can give actionable feedback when
-# subprocesses fail to spawn (for example when pnpm is missing on a new machine).
+# subprocesses fail to spawn (for example when npm is missing on a new machine).
 COMMAND_HINTS: Dict[str, str] = {
-    "pnpm": "Install pnpm via `npm install -g pnpm@latest` or follow https://pnpm.io/installation.",
+    "npm": "Install Node.js 18+ from https://nodejs.org/en/download which bundles npm.",
+    "node": "Install Node.js 18+ from https://nodejs.org/en/download and ensure it is on your PATH.",
 }
 
 
@@ -120,7 +121,8 @@ def check_prerequisites() -> None:
         )
 
     required_tools = {
-        "pnpm": COMMAND_HINTS["pnpm"],
+        "node": COMMAND_HINTS["node"],
+        "npm": COMMAND_HINTS["npm"],
     }
 
     missing = []
@@ -163,7 +165,7 @@ def run_command(command: Iterable[str], description: str, cwd: Optional[Path] = 
 
     logging.info("▶️ %s", description)
     command_list = list(command)
-    # Normalise the command so Windows PowerShell shims (e.g. pnpm.ps1) launch correctly.
+    # Normalise the command so Windows PowerShell shims (e.g. npm.cmd) launch correctly.
     prepared_command = prepare_command(command_list)
     logging.debug("Resolved command for execution: %s", prepared_command)
     try:
@@ -210,7 +212,7 @@ def install_dependencies(skip_installs: bool) -> None:
         "Installing Python project requirements",
     )
 
-    run_command(["pnpm", "install"], "Installing pnpm workspace dependencies", cwd=REPO_ROOT)
+    run_command(["npm", "install"], "Installing npm workspace dependencies", cwd=REPO_ROOT)
 
 
 def build_frontend_if_needed(mode: str) -> None:
@@ -220,7 +222,7 @@ def build_frontend_if_needed(mode: str) -> None:
         return
 
     run_command(
-        ["pnpm", "--filter", "fusion-futures-web", "build"],
+        ["npm", "run", "build", "--workspace", "fusion-futures-web"],
         "Building Next.js frontend for production",
         cwd=REPO_ROOT,
     )
@@ -309,11 +311,11 @@ def build_backend_command(host: str, port: int, dev_mode: bool) -> Iterable[str]
 
 
 def build_frontend_command(mode: str) -> Iterable[str]:
-    """Return the pnpm command to start the Next.js frontend in the requested mode."""
+    """Return the npm command to start the Next.js frontend in the requested mode."""
 
     if mode == "production":
-        return ["pnpm", "--filter", "fusion-futures-web", "start"]
-    return ["pnpm", "--filter", "fusion-futures-web", "dev"]
+        return ["npm", "run", "start", "--workspace", "fusion-futures-web"]
+    return ["npm", "run", "dev", "--workspace", "fusion-futures-web"]
 
 
 async def launch_services(args: argparse.Namespace) -> None:

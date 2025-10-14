@@ -3,7 +3,7 @@
  * File: packages/ui/src/components/__tests__/card.test.tsx
  * Purpose: Validate the Card component renders headings and actions correctly.
  * Structure: Uses React Testing Library with Vitest for component testing.
- * Usage: Executed via `pnpm --filter @fusion-futures/ui test`.
+ * Usage: Executed via `npm run test --workspace @fusion-futures/ui`.
  * ============================================================================
  */
 import "@testing-library/jest-dom/vitest";

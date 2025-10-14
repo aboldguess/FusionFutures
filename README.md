@@ -36,13 +36,10 @@ source .venv/bin/activate
 python -m pip install --upgrade pip
 python -m pip install -r reqs.txt
 
-# 5. Bootstrap tooling once (enable pnpm via Corepack or install globally)
-#    Preferred (respects the Node version pinned by asdf):
-corepack enable pnpm
-#    Fallback for environments without Corepack:
-npm install -g pnpm@latest
+# 5. (Optional) Pre-install JavaScript dependencies so the first launch is faster
+npm install
 
-# 6. Launch the local preview (installs deps on first run, starts web+API servers)
+# 6. Launch the local preview (installs deps on first run if you skipped step 5)
 python scripts/launch_fusionfutures_local.py
 
 # Optional: use --help to view flags such as custom ports or production mode
@@ -69,13 +66,10 @@ py -3 -m venv .venv
 python -m pip install --upgrade pip
 python -m pip install -r reqs.txt
 
-# 5. Enable pnpm via Corepack (preferred) or install globally once per machine
-#    Preferred (available in Node.js 16.13+):
-corepack enable pnpm
-#    Fallback when Corepack is unavailable:
-npm install -g pnpm@latest
+# 5. (Optional) Pre-install JavaScript dependencies so the first launch is faster
+npm install
 
-# 6. Launch the local preview (installs deps on first run, starts web+API servers)
+# 6. Launch the local preview (installs deps on first run if you skipped step 5)
 py -3 scripts\launch_fusionfutures_local.py
 
 # Optional: inspect available flags (e.g. custom ports or production mode)
@@ -93,7 +87,7 @@ py -3 scripts\launch_fusionfutures_local.py --help
 - `python scripts/fusionfutures_setup.py --allow-type-failures` &mdash; continue running even when schema generation fails (useful offline).
 - `python scripts/fusionfutures_setup.py --skip-docker` &mdash; prepare dependencies without starting containers (e.g., CI runs).
 
-The setup helper validates the presence of Docker, Node.js, and pnpm up front, printing actionable remediation hints for any
+The setup helper validates the presence of Docker, Node.js, and npm up front, printing actionable remediation hints for any
 missing prerequisite before exiting to keep you informed.
 
 ### Local Preview Script Flags
@@ -114,24 +108,13 @@ The script sets `FUSION_FUTURES_FRONTEND_ORIGIN` automatically so API CORS rules
   Docker and application logs with color-coded severity markers.
 - **Tracing Requests:** Outbound requests attach an `X-Request-ID` header allowing cross-service correlation.
 
-### Troubleshooting pnpm Installation
+### Troubleshooting npm Detection
 
-- **Symptom:** `Command 'pnpm' could not be found` during `scripts/launch_fusionfutures_local.py`.
-- **Root Cause:** pnpm is not yet enabled on your PATH. Corepack ships with recent Node.js releases but must be activated once per machine.
-- **Resolution (Linux/macOS/WSL/Raspberry Pi OS):**
-  ```bash
-  corepack enable pnpm
-  corepack prepare pnpm@latest --activate
-  pnpm --version
-  ```
-- **Resolution (Windows PowerShell):**
-  ```powershell
-  corepack enable pnpm
-  corepack prepare pnpm@latest --activate
-  pnpm --version
-  ```
-- **Fallback:** If Corepack is unavailable, install pnpm globally with `npm install -g pnpm@latest` and re-run the launcher.
-- **Verification:** `pnpm --version` should print a semantic version (e.g., `9.1.0`). If the launcher still fails, re-run with `--verbose` to surface the resolved pnpm path in the logs.
+- **Symptom:** `Command 'npm' could not be found` during `scripts/launch_fusionfutures_local.py`.
+- **Root Cause:** Node.js (which bundles npm) is either not installed or not on your PATH.
+- **Resolution (Linux/macOS/WSL/Raspberry Pi OS):** Install Node.js via `asdf install nodejs latest`, `brew install node`, or your distribution package manager. Verify with `node --version` and `npm --version`.
+- **Resolution (Windows PowerShell):** Install Node.js using `winget install OpenJS.NodeJS.LTS` or from the official MSI installer, then restart PowerShell to refresh PATH variables.
+- **Verification:** `npm --version` should print a semantic version (e.g., `10.8.1`). If the launcher still fails, re-run with `--verbose` to surface the resolved npm path in the logs.
 
 ### Troubleshooting `pip install -e services/api`
 
@@ -149,8 +132,8 @@ The script sets `FUSION_FUTURES_FRONTEND_ORIGIN` automatically so API CORS rules
 
 ## Testing & Quality Gates
 
-- `pnpm lint` for ESLint + Prettier.
-- `pnpm test` for unit tests (React Testing Library + Vitest).
+- `npm run lint --workspaces` for ESLint + Prettier.
+- `npm run test --workspaces` for unit tests (React Testing Library + Vitest).
 - `pytest` for backend unit and integration tests.
 - `pytest services/api/tests/test_health.py services/api/tests/test_demo_crud.py` runs backend smoke tests hitting `/api/healthz`
   and CRUD endpoints (mirrors the automated smoke coverage).
