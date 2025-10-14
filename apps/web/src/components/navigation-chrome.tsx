@@ -16,6 +16,7 @@ import { ProfileMenu } from '@/components/profile-menu';
 import { RoleBadge } from '@/components/role-badge';
 import { UserRoleSelector } from '@/components/user-role-selector';
 import { logger } from '@/lib/logger';
+import { getAppName } from '@/lib/runtime-config';
 import { usePlatformUser } from '@/hooks/use-platform-user';
 import { SparklesIcon } from '@heroicons/react/24/solid';
 
@@ -39,6 +40,8 @@ export function NavigationChrome({ children }: NavigationChromeProps) {
   const pathname = usePathname();
   const { activeUser } = usePlatformUser();
   const [isSidebarOpen, setSidebarOpen] = useState(true);
+  // Surface the configured application name so the UI mirrors the active deployment.
+  const appName = getAppName();
 
   const sidebarLinks = useMemo(
     () =>
@@ -89,14 +92,14 @@ export function NavigationChrome({ children }: NavigationChromeProps) {
         </div>
         <div className="space-y-3 text-xs text-slate-400">
           <p>Need help? The platform tour is inside each page header.</p>
-          <p className="font-semibold text-brand-light">Fusion Futures v1.0</p>
+          <p className="font-semibold text-brand-light">{appName} v1.0</p>
         </div>
       </aside>
       <main className="flex-1 bg-slate-950">
         <header className="sticky top-0 z-10 border-b border-white/5 bg-slate-950/80 backdrop-blur">
           <div className="mx-auto flex max-w-6xl flex-col gap-4 px-6 py-6 md:flex-row md:items-center md:justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-white">Fusion Futures Hub</h1>
+              <h1 className="text-2xl font-bold text-white">{appName}</h1>
               <p className="text-sm text-slate-300">
                 Welcome {activeUser.profile.name}. Follow the on-screen prompts to manage your network, content, and events
                 without needing the documentation.
