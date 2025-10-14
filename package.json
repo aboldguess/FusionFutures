@@ -2,14 +2,14 @@
   "//": "File: package.json | Purpose: Defines workspace tooling and shared scripts | Structure: Root workspace config with lint/test commands",
   "name": "fusion-futures-monorepo",
   "private": true,
-  "packageManager": "pnpm@9.1.0",
+  "packageManager": "npm@10.8.1",
   "scripts": {
-    "build": "pnpm -r run build",
-    "dev": "pnpm --recursive run dev",
-    "lint": "pnpm --recursive run lint",
-    "format": "pnpm --recursive run format",
-    "test": "pnpm --recursive run test",
-    "typecheck": "pnpm --recursive run typecheck",
+    "build": "npm run build --workspaces",
+    "dev": "npm run dev --workspaces",
+    "lint": "npm run lint --workspaces",
+    "format": "npm run format --workspaces",
+    "test": "npm run test --workspaces",
+    "typecheck": "npm run typecheck --workspaces",
     "types": "node scripts/generate-types.mjs"
   },
   "devDependencies": {
@@ -19,15 +19,6 @@
     "prettier": "3.3.1",
     "openapi-typescript": "7.9.1",
     "prettier-plugin-tailwindcss": "0.5.13"
-  },
-  "pnpm": {
-    "packageExtensions": {
-      "next-auth@*": {
-        "peerDependencies": {
-          "@auth/core": "^0.20.0"
-        }
-      }
-    }
   },
   "workspaces": [
     "apps/web",

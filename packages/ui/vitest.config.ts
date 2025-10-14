@@ -3,7 +3,7 @@
  * File: packages/ui/vitest.config.ts
  * Purpose: Configure Vitest with React Testing Library and jsdom environment.
  * Structure: Exports configuration used by package test command.
- * Usage: Automatically loaded when running `pnpm --filter @fusion-futures/ui test`.
+ * Usage: Automatically loaded when running `npm run test --workspace @fusion-futures/ui`.
  * ============================================================================
  */
 import { defineConfig } from "vitest/config";

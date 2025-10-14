@@ -28,7 +28,6 @@ __pycache__/
 *.log
 .idea/
 .vscode/
-package-lock.json
 poetry.lock
 .eggs/
 .venv/

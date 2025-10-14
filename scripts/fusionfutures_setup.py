@@ -83,7 +83,7 @@ def check_prerequisites(skip_docker: bool) -> None:
     """
     required_tools = {
         "node": "Install Node.js 18+ from https://nodejs.org/ or via your package manager.",
-        "pnpm": "Install pnpm from https://pnpm.io/installation or via `npm install -g pnpm@latest`.",
+        "npm": "Install Node.js 18+ from https://nodejs.org/ which bundles npm by default.",
     }
     if not skip_docker:
         required_tools["docker"] = "Install Docker Desktop (Windows/macOS) or Docker Engine (Linux/Raspberry Pi)."
@@ -131,9 +131,9 @@ def _docker_compose_available() -> bool:
     return result.returncode == 0
 
 
-def ensure_pnpm_dependencies() -> None:
-    """Install Node.js workspace dependencies via pnpm."""
-    run_command(["pnpm", "install"], "Installing pnpm workspace dependencies")
+def ensure_npm_dependencies() -> None:
+    """Install Node.js workspace dependencies via npm."""
+    run_command(["npm", "install"], "Installing npm workspace dependencies")
 
 
 def generate_types(skip_on_failure: bool) -> None:
@@ -268,7 +268,7 @@ def main(argv: Optional[List[str]] = None) -> int:
         check_prerequisites(skip_docker=args.skip_docker)
 
         if not args.skip_install:
-            ensure_pnpm_dependencies()
+            ensure_npm_dependencies()
             venv_python = ensure_virtualenv(args.python)
             install_python_dependencies(venv_python, args.extra_python_packages)
             if not args.skip_types:

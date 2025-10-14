@@ -1,9 +1,0 @@
-# ============================================================================
-# File: pnpm-workspace.yaml
-# Purpose: Declare pnpm workspace package locations for the monorepo.
-# Structure: Lists glob patterns representing workspaces.
-# Usage: Consumed by pnpm during install/build commands.
-# ============================================================================
-packages:
-  - "apps/*"
-  - "packages/*"
