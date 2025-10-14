@@ -1,9 +1,0 @@
-{
-  "//": "File: packages/types/tsconfig.build.json | Purpose: Build config for type package | Structure: Extends base and includes src",
-  "extends": "./tsconfig.base.json",
-  "compilerOptions": {
-    "rootDir": "src",
-    "declarationMap": true
-  },
-  "include": ["src"]
-}
