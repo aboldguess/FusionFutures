@@ -13,8 +13,8 @@
  *    additional flags provided by the developer).
  * 2. Resolve the most appropriate port using CLI flags, environment variables,
  *    and project defaults while validating the value for safety.
- * 3. Spawn the local `next` binary through `npx`, forwarding all other options
- *    unchanged and providing visibility via debug logs.
+ * 3. Resolve the local `next` CLI and execute it directly with Node, forwarding
+ *    all other options unchanged and providing visibility via debug logs.
  *
  * ## Usage
  * Invoked automatically through npm scripts, for example:
@@ -27,7 +27,10 @@
  */
 
 import { spawn } from 'node:child_process';
+import { existsSync } from 'node:fs';
+import path from 'node:path';
 import process from 'node:process';
+import { fileURLToPath } from 'node:url';
 
 const DEFAULT_PORT = 3000;
 const DEFAULT_HOSTNAME = '0.0.0.0';
@@ -106,6 +109,51 @@ function extractHostname(args) {
   return DEFAULT_HOSTNAME;
 }
 
+/**
+ * Locate the Next.js CLI entry point within the current project.
+ * The CLI is executed through Node directly to avoid `npx` spawning
+ * inconsistencies on Windows (which previously raised EINVAL).
+ */
+function resolveNextBinary() {
+  if (typeof import.meta.resolve === 'function') {
+    try {
+      const resolvedUrl = import.meta.resolve('next/dist/bin/next');
+      if (resolvedUrl) {
+        return fileURLToPath(resolvedUrl);
+      }
+    } catch (error) {
+      console.warn(
+        '[run-next-web] Falling back to manual Next.js CLI lookup after resolution error.',
+        error,
+      );
+    }
+  }
+
+  const nextCliPath = path.join(
+    process.cwd(),
+    'node_modules',
+    'next',
+    'dist',
+    'bin',
+    'next',
+  );
+
+  if (existsSync(nextCliPath)) {
+    return nextCliPath;
+  }
+
+  const binDirectory = path.join(process.cwd(), 'node_modules', '.bin');
+  const binProxyPath = path.join(binDirectory, 'next');
+  if (existsSync(binProxyPath)) {
+    return binProxyPath;
+  }
+
+  console.error(
+    '[run-next-web] Unable to locate the Next.js CLI. Have you installed dependencies with "npm install"?',
+  );
+  process.exit(1);
+}
+
 function main() {
   const [, , nextSubCommand = 'dev', ...rawArgs] = process.argv;
   const sanitizedArgs = rawArgs.filter(Boolean);
@@ -120,13 +168,15 @@ function main() {
   const finalArgs = [nextSubCommand, '--port', String(port), ...argsWithHostname];
   const resolvedHostname = extractHostname(argsWithHostname);
 
-  const npxCommand = process.platform === 'win32' ? 'npx.cmd' : 'npx';
+  const nextBinary = resolveNextBinary();
+  const command = process.execPath;
+  const args = [nextBinary, ...finalArgs];
 
   console.info(
     `[run-next-web] Launching "next ${nextSubCommand}" on ${resolvedHostname}:${port}.`,
   );
 
-  const child = spawn(npxCommand, ['next', ...finalArgs], {
+  const child = spawn(command, args, {
     stdio: 'inherit',
     env: {
       ...process.env,
