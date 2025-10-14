@@ -1,0 +1,17 @@
+#
+# @file .gitignore
+# @description Mini README: Defines files and directories ignored by Git to keep the repository lean and secure.
+#
+
+node_modules/
+apps/web/.next/
+apps/web/out/
+.env*
+apps/web/.env.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.DS_Store
+coverage/
+.vscode/

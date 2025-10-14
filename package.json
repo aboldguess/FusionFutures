@@ -1,0 +1,29 @@
+{
+  "name": "fusion-futures-monorepo",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Fusion Futures digital platform monorepo hosting the web application and shared packages.",
+  "workspaces": [
+    "apps/web",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:web": "npm run dev --prefix apps/web",
+    "build:web": "npm run build --prefix apps/web",
+    "lint:web": "npm run lint --prefix apps/web",
+    "test:web": "npm run test --prefix apps/web"
+  },
+  "devDependencies": {},
+  "overrides": {
+    "typescript": "5.5.4",
+    "@typescript-eslint/eslint-plugin": {
+      "typescript": "5.5.4"
+    },
+    "ts-api-utils": {
+      "typescript": "5.5.4"
+    },
+    "eslint-config-next": {
+      "typescript": "5.5.4"
+    }
+  }
+}
