@@ -8,6 +8,7 @@
 'use client';
 
 import Link from 'next/link';
+import type { Route } from 'next';
 import { usePathname } from 'next/navigation';
 import { ReactNode, useMemo, useState } from 'react';
 import { clsx } from 'clsx';
@@ -22,7 +23,12 @@ interface NavigationChromeProps {
   children: ReactNode;
 }
 
-const links = [
+interface NavigationLink {
+  href: Route;
+  label: string;
+}
+
+const links: NavigationLink[] = [
   { href: '/', label: 'Impact Feed' },
   { href: '/events', label: 'Events Hub' },
   { href: '/employers', label: 'Employers & Educators' },

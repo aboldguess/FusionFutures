@@ -4,9 +4,11 @@
  * browsers. Tailwind processes component classes while autoprefixer ensures compatibility.
  */
 
-export default {
+const postcssConfig = {
   plugins: {
     tailwindcss: {},
     autoprefixer: {}
   }
 };
+
+export default postcssConfig;

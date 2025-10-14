@@ -12,6 +12,13 @@ WEB_DIR="$ROOT_DIR/apps/web"
 
 cd "$ROOT_DIR"
 
+case "${OSTYPE:-}" in
+  msys*|cygwin*|win32)
+    echo "⚠️  Detected Windows shell. Please run 'pwsh -File scripts/bootstrap-fusion-futures-web.ps1' instead." >&2
+    exit 1
+    ;;
+esac
+
 echo "🔧 Installing root dependencies..."
 npm install
 
@@ -19,6 +26,11 @@ echo "🔧 Installing web app dependencies..."
 npm install --prefix "$WEB_DIR"
 
 if [ ! -f "$WEB_DIR/.env.local" ]; then
+  if [ ! -f "$WEB_DIR/.env.example" ]; then
+    echo "❌ Missing .env example at $WEB_DIR/.env.example" >&2
+    exit 1
+  fi
+
   echo "📝 Creating local environment file..."
   cp "$WEB_DIR/.env.example" "$WEB_DIR/.env.local"
 fi

@@ -15,15 +15,17 @@
   },
   "devDependencies": {},
   "overrides": {
-    "typescript": "5.5.4",
+    "glob": "^10.4.5",
+    "rimraf": "^5.0.9",
+    "typescript": "5.9.3",
     "@typescript-eslint/eslint-plugin": {
-      "typescript": "5.5.4"
+      "typescript": "5.9.3"
     },
     "ts-api-utils": {
-      "typescript": "5.5.4"
+      "typescript": "5.9.3"
     },
     "eslint-config-next": {
-      "typescript": "5.5.4"
+      "typescript": "5.9.3"
     }
   }
 }
