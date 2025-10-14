@@ -2,7 +2,7 @@
   "//": "File: package.json | Purpose: Defines workspace tooling and shared scripts | Structure: Root workspace config with lint/test commands",
   "name": "fusion-futures-monorepo",
   "private": true,
-  "packageManager": "npm@10.8.1",
+  "packageManager": "npm@11.4.2",
   "scripts": {
     "build": "npm run build --workspaces",
     "dev": "npm run dev --workspaces",
