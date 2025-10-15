@@ -10,7 +10,7 @@
 import Link from 'next/link';
 import type { Route } from 'next';
 import { usePathname } from 'next/navigation';
-import { ReactNode, useMemo, useState } from 'react';
+import { ReactNode, useEffect, useMemo, useState } from 'react';
 import { clsx } from 'clsx';
 import { ProfileMenu } from '@/components/profile-menu';
 import { RoleBadge } from '@/components/role-badge';
@@ -38,7 +38,7 @@ const links: NavigationLink[] = [
 
 export function NavigationChrome({ children }: NavigationChromeProps) {
   const pathname = usePathname();
-  const { activeUser } = usePlatformUser();
+  const { activeUser, bootstrapped } = usePlatformUser();
   const [isSidebarOpen, setSidebarOpen] = useState(true);
   // Surface the configured application name so the UI mirrors the active deployment.
   const appName = getAppName();
@@ -52,7 +52,24 @@ export function NavigationChrome({ children }: NavigationChromeProps) {
     [pathname]
   );
 
+  // Log the current rendering state to aid debugging across environments.
   logger.debug('Rendering NavigationChrome', { activePath: pathname, sidebarOpen: isSidebarOpen });
+
+  // If the session bootstrap has completed but no active user exists, emit a warning so we can trace it quickly.
+  useEffect(() => {
+    if (bootstrapped && !activeUser) {
+      logger.warn('NavigationChrome rendered without an active user; falling back to guest instructions.', {
+        activePath: pathname
+      });
+    }
+  }, [activeUser, bootstrapped, pathname]);
+
+  // Copy shown beneath the page title dynamically adapts based on authentication state.
+  const welcomeCopy = activeUser
+    ? `Welcome ${activeUser.profile.name}. Follow the on-screen prompts to manage your network, content, and events without needing the documentation.`
+    : bootstrapped
+      ? 'Welcome explorer. Sign in or choose a demo profile to unlock guided workflows for managing your network, content, and events.'
+      : 'Preparing your personalised workspace. We will display your guided tasks as soon as your profile loads.';
 
   return (
     <div className="flex min-h-screen">
@@ -100,15 +117,30 @@ export function NavigationChrome({ children }: NavigationChromeProps) {
           <div className="mx-auto flex max-w-6xl flex-col gap-4 px-6 py-6 md:flex-row md:items-center md:justify-between">
             <div>
               <h1 className="text-2xl font-bold text-white">{appName}</h1>
-              <p className="text-sm text-slate-300">
-                Welcome {activeUser.profile.name}. Follow the on-screen prompts to manage your network, content, and events
-                without needing the documentation.
-              </p>
+              <p className="text-sm text-slate-300">{welcomeCopy}</p>
             </div>
             <div className="flex items-center gap-6">
-              <RoleBadge role={activeUser.role} />
-              <UserRoleSelector />
-              <ProfileMenu />
+              {activeUser ? (
+                <>
+                  <RoleBadge role={activeUser.role} />
+                  <UserRoleSelector />
+                  <ProfileMenu />
+                </>
+              ) : (
+                <div className="flex max-w-xs flex-col gap-2 rounded-2xl border border-dashed border-white/10 bg-slate-900/60 p-4 text-left text-xs text-slate-200">
+                  <p className="font-semibold text-slate-100">
+                    {bootstrapped ? 'No active profile detected' : 'Loading your saved profile'}
+                  </p>
+                  <p>
+                    {bootstrapped
+                      ? 'Head to the login page or use the guided quick-start cards to pick who you want to explore the platform as.'
+                      : 'Fetching any stored sessions. If this takes longer than expected, refresh or sign in again.'}
+                  </p>
+                  <p className="text-[10px] uppercase text-slate-500">
+                    Debug ref: {bootstrapped ? 'session_missing' : 'bootstrapping'}
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         </header>
