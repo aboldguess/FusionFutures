@@ -14,7 +14,8 @@ export const seedInvitations: InvitationRecord[] = [
     role: 'user',
     issuedBy: 'account-admin-001',
     issuedAt: '2024-05-01T12:00:00.000Z',
-    expiresAt: '2024-06-01T12:00:00.000Z',
+    // Extend expiry well into the future so the shared invite link remains valid during demos.
+    expiresAt: '2026-06-01T12:00:00.000Z',
     status: 'pending',
     organisationNameSuggestion: 'Aurora Fusion Labs',
     message: 'Join to co-design employer projects and propose your new organisation.'
@@ -25,7 +26,8 @@ export const seedInvitations: InvitationRecord[] = [
     role: 'admin',
     issuedBy: 'account-superadmin-001',
     issuedAt: '2024-04-20T09:15:00.000Z',
-    expiresAt: '2024-05-25T09:15:00.000Z',
+    // Likewise keep the admin onboarding invite usable for guided walkthroughs.
+    expiresAt: '2026-05-25T09:15:00.000Z',
     status: 'pending',
     organisationId: 'org-ops-001',
     message: 'Help oversee onboarding approvals for the operations team.'

@@ -14,7 +14,8 @@ export const seedAccounts: PlatformAccount[] = [
     email: 'amina.clarke@fusionfutures.example',
     role: 'superadmin',
     status: 'active',
-    passwordHash: '2ce896c7ac6f040d9b3c6ce3f01ecb92d58628d9c082ffed2645b95f5e23fe63',
+    // Hash corresponds to the on-screen demo password "FusionSuperadmin!1" (SHA-256, computed client-side for parity).
+    passwordHash: 'e795c30f4176c04f6d0cc40ab32d5a6cdf934e26b012eada7b835edc9ede533f',
     createdAt: '2024-01-04T09:30:00.000Z',
     lastLogin: '2024-05-01T10:15:00.000Z',
     organisationAdmin: true,
@@ -36,7 +37,8 @@ export const seedAccounts: PlatformAccount[] = [
     email: 'jonah.reid@fusionfutures.example',
     role: 'admin',
     status: 'active',
-    passwordHash: '09e1553f419756e7882757fa10700387753ab66f3cd27e901243a25e0412f1ee',
+    // Hash corresponds to the demo password "FusionAdmin!1" so administrators can successfully authenticate during demos.
+    passwordHash: '43420991da18e4744ca1ce59f795000ebbb0e458b2578a04c2445d1a4242adb3',
     createdAt: '2024-02-10T11:00:00.000Z',
     lastLogin: '2024-04-22T12:40:00.000Z',
     organisationAdmin: true,
@@ -59,7 +61,8 @@ export const seedAccounts: PlatformAccount[] = [
     email: 'ellie.morgan@fusionfutures.example',
     role: 'user',
     status: 'active',
-    passwordHash: '83dee1e879747d9c33df963e731439ce48b62983044fcddfce4d5db77e6fa42f',
+    // Hash corresponds to the demo learner password "FusionUser!1" for the standard user walkthrough.
+    passwordHash: '3d50a5f1d9422da0bc82a8c9216793b156b0ea5ab4b11f8ea1b9b221618d8f1d',
     createdAt: '2024-03-05T08:00:00.000Z',
     lastLogin: '2024-04-28T09:10:00.000Z',
     organisationAdmin: true,
