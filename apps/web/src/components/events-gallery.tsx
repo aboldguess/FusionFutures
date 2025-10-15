@@ -2,8 +2,11 @@
  * @file events-gallery.tsx
  * @description Mini README: Visualises events in a responsive gallery with key metadata, enabling quick discovery of
  * upcoming opportunities. Resolves event owners via the live auth context so new administrators appear without code
- * changes.
+ * changes. Because this component relies on the client-side authentication hook, it is explicitly marked as a client
+ * component to avoid server-only rendering constraints.
  */
+
+'use client';
 
 import Image from 'next/image';
 import { format } from 'date-fns';
