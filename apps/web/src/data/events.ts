@@ -6,7 +6,12 @@
 
 import type { EventRecord } from '@/types/platform';
 
-export const events: EventRecord[] = [
+/**
+ * Exported seed dataset used by the events context. Keeping the data immutable
+ * ensures that run-time CRUD operations never mutate the original reference –
+ * useful for debugging regressions when comparing against the baseline.
+ */
+export const seedEvents: EventRecord[] = [
   {
     id: 'event-1',
     ownerId: 'account-superadmin-001',
