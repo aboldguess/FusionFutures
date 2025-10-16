@@ -12,6 +12,7 @@ import { useForm } from 'react-hook-form';
 import { useState } from 'react';
 import { logger } from '@/lib/logger';
 import { usePlatformUser } from '@/hooks/use-platform-user';
+import { useEvents } from '@/hooks/use-events';
 
 const schema = z.object({
   title: z.string().min(5, 'Name your event clearly.'),
@@ -27,6 +28,7 @@ type EventDraft = z.infer<typeof schema>;
 
 export function EventCreateForm() {
   const { activeUser } = usePlatformUser();
+  const { createEvent } = useEvents();
   const [toast, setToast] = useState<string | null>(null);
   const form = useForm<EventDraft>({
     resolver: zodResolver(schema),
@@ -50,9 +52,33 @@ export function EventCreateForm() {
   }
 
   const onSubmit = (data: EventDraft) => {
-    logger.info('Event draft created', { organiser: activeUser.profile.name, data });
-    setToast('Event saved locally. In production you would now publish or request approval.');
-    form.reset();
+    try {
+      const created = createEvent({
+        ownerId: activeUser.id,
+        title: data.title,
+        summary: data.summary,
+        location: data.location,
+        startDate: data.startDate,
+        endDate: data.endDate,
+        mode: data.mode,
+        visibility: data.visibility
+      });
+
+      logger.info('Event draft committed to context', { organiser: activeUser.profile.name, eventId: created.id });
+      setToast(`“${created.title}” saved. Use the management panel below to publish or invite attendees.`);
+      form.reset({
+        title: '',
+        summary: '',
+        location: '',
+        startDate: '',
+        endDate: '',
+        mode: 'hybrid',
+        visibility: 'public'
+      });
+    } catch (error) {
+      logger.error('Failed to create event draft', { error });
+      setToast('Something went wrong while saving. Please retry or capture the console logs for support.');
+    }
   };
 
   return (

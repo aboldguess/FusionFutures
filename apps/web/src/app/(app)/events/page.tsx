@@ -6,6 +6,7 @@
 import { PageHeader } from '@/components/page-header';
 import { EventCreateForm } from '@/components/event-create-form';
 import { EventsGallery } from '@/components/events-gallery';
+import { EventManagementPanel } from '@/components/event-management-panel';
 
 export default function EventsPage() {
   return (
@@ -20,6 +21,7 @@ export default function EventsPage() {
         ]}
       />
       <EventCreateForm />
+      <EventManagementPanel />
       <EventsGallery />
     </div>
   );

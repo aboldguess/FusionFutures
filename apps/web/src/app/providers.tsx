@@ -13,6 +13,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { logger } from '@/lib/logger';
 import { PlatformUserProvider } from '@/hooks/use-platform-user';
 import { ImpactFeedProvider } from '@/hooks/use-impact-feed';
+import { EventsProvider } from '@/hooks/use-events';
 
 interface ProvidersProps {
   children: ReactNode;
@@ -27,7 +28,9 @@ export function Providers({ children }: ProvidersProps) {
     <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
       <QueryClientProvider client={client}>
         <PlatformUserProvider>
-          <ImpactFeedProvider>{children}</ImpactFeedProvider>
+          <EventsProvider>
+            <ImpactFeedProvider>{children}</ImpactFeedProvider>
+          </EventsProvider>
         </PlatformUserProvider>
       </QueryClientProvider>
     </ThemeProvider>
