@@ -6,7 +6,7 @@
 
 'use client';
 
-import { FormEvent, useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { usePlatformUser } from '@/hooks/use-platform-user';
 import { logger } from '@/lib/logger';
@@ -25,10 +25,33 @@ export function LoginPanel({ redirectPath = '/', message }: LoginPanelProps) {
   const [error, setError] = useState<string | null>(null);
   const [toast, setToast] = useState<string | null>(message ?? null);
   const [isSubmitting, setSubmitting] = useState(false);
+  const [hasTriggeredRedirect, setHasTriggeredRedirect] = useState(false);
+
+  useEffect(() => {
+    // Redirect authenticated users outside the render lifecycle to avoid React warnings.
+    if (!activeUser || hasTriggeredRedirect) {
+      return;
+    }
+
+    const targetPath = redirectPath || '/';
+    logger.info('Active user detected in login panel – redirecting now.', {
+      targetPath
+    });
+    setHasTriggeredRedirect(true);
+    router.replace(targetPath);
+  }, [activeUser, hasTriggeredRedirect, redirectPath, router]);
 
   if (activeUser) {
-    router.replace(redirectPath || '/');
-    return null;
+    return (
+      <div className="space-y-6">
+        <section className="rounded-2xl border border-white/10 bg-slate-950/60 p-6 text-sm text-slate-200">
+          <h2 className="text-lg font-semibold text-white">Redirecting you</h2>
+          <p className="mt-2 text-xs text-slate-300">
+            We found an active session and are guiding you back to your workspace. This helps prevent duplicate logins.
+          </p>
+        </section>
+      </div>
+    );
   }
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
