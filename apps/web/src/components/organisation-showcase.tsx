@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * @file organisation-showcase.tsx
  * @description Mini README: Highlights employer and educator microsites, showing branding controls and linked users. Uses
@@ -7,6 +9,7 @@
 import { usePlatformUser } from '@/hooks/use-platform-user';
 
 export function OrganisationShowcase() {
+  // usePlatformUser is a client-side hook, so we expose the component as a client component to avoid server/runtime violations.
   const { organisations, accounts } = usePlatformUser();
   const approvedOrganisations = organisations.filter((organisation) => organisation.status === 'approved');
 
