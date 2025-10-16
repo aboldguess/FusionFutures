@@ -200,6 +200,12 @@ function EventManagementCard({
   };
 
   const handleAddAttendee = () => {
+    if (!canManage) {
+      reportStatus('You do not have permission to modify attendees for this event.');
+      logger.warn('Blocked unauthorised attendee add attempt', { eventId: event.id, actor: activeAccountId });
+      return;
+    }
+
     if (!attendeeSelection) {
       return;
     }
@@ -210,6 +216,12 @@ function EventManagementCard({
   };
 
   const handleRemoveAttendee = (accountId: string) => {
+    if (!canManage) {
+      reportStatus('You do not have permission to modify attendees for this event.');
+      logger.warn('Blocked unauthorised attendee removal attempt', { eventId: event.id, actor: activeAccountId });
+      return;
+    }
+
     onRemoveAttendee(event.id, accountId);
     reportStatus('Attendee removed from the guest list.');
   };
@@ -362,7 +374,8 @@ function EventManagementCard({
                       <button
                         type="button"
                         onClick={() => handleRemoveAttendee(attendeeId)}
-                        className="rounded-full bg-black/40 px-2 py-0.5 text-[10px] uppercase tracking-wide text-rose-200"
+                        className="rounded-full bg-black/40 px-2 py-0.5 text-[10px] uppercase tracking-wide text-rose-200 disabled:cursor-not-allowed disabled:opacity-40"
+                        disabled={!canManage}
                       >
                         Remove
                       </button>
@@ -387,7 +400,8 @@ function EventManagementCard({
               <button
                 type="button"
                 onClick={handleAddAttendee}
-                className="rounded-full bg-brand px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-dark"
+                className="rounded-full bg-brand px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-dark disabled:cursor-not-allowed disabled:opacity-40"
+                disabled={!canManage || !attendeeSelection}
               >
                 Add attendee
               </button>
